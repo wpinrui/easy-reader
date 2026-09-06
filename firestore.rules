@@ -1,0 +1,21 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // A shared text is readable by anyone holding its id, writable once, and
+    // never editable or listable. Ids are random, so they are not enumerable.
+    match /texts/{id} {
+      allow get: if true;
+      allow create: if request.resource.data.keys().hasOnly(['text', 'createdAt'])
+                    && request.resource.data.text is string
+                    && request.resource.data.text.size() > 0
+                    && request.resource.data.text.size() <= 200000
+                    && request.resource.data.createdAt == request.time;
+      allow list, update, delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
