@@ -1,6 +1,14 @@
 rules_version = '2';
 
 service cloud.firestore {
+  // The one account allowed to create texts here. Anyone may read a text they
+  // hold the link to, but this is a single-person app, so nobody else gets to
+  // write to it: that is what keeps a public config from being a public
+  // write endpoint.
+  function owner() {
+    return 'ktmsNU8YdYYzoyRC64nuLoxqY2y2';
+  }
+
   match /databases/{database}/documents {
     // A shared text is readable by anyone holding its id, and belongs to the
     // Google account that created it: only that owner can list or delete it.
@@ -10,10 +18,10 @@ service cloud.firestore {
       // Listing is owner-scoped. Firestore only runs a query whose constraints
       // guarantee every result passes this, so a query without the owner
       // filter is rejected outright rather than returning someone else's texts.
-      allow list: if request.auth != null
+      allow list: if request.auth.uid == owner()
                   && resource.data.owner == request.auth.uid;
 
-      allow create: if request.auth != null
+      allow create: if request.auth.uid == owner()
                     && request.resource.data.keys().hasOnly(
                          ['text', 'owner', 'title', 'wordCount',
                           'createdAt', 'lastAccessedAt'])
@@ -34,7 +42,7 @@ service cloud.firestore {
                          .affectedKeys().hasOnly(['lastAccessedAt'])
                     && request.resource.data.lastAccessedAt == request.time;
 
-      allow delete: if request.auth != null
+      allow delete: if request.auth.uid == owner()
                     && resource.data.owner == request.auth.uid;
     }
 
