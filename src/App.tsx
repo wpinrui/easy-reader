@@ -184,15 +184,13 @@ export function App() {
       {status && <p className="status">{status}</p>}
 
       <div className="page">
-        {/* Tapping the page hides the chrome. A click that ends a selection is
-            the reader highlighting something, not asking for a bare page. */}
+        {/* Double-clicking the page hides the chrome. Single clicks are left
+            alone so selecting and scrolling never move it. */}
         {/* biome-ignore lint/a11y/noStaticElementInteractions: the same toggle is on the puck */}
         {/* biome-ignore lint/a11y/useKeyWithClickEvents: keyboard users have the puck and Escape */}
         <div
           className="page-surface"
-          onClick={() => {
-            if (!window.getSelection()?.toString()) setChromeHidden((h) => !h);
-          }}
+          onDoubleClick={() => setChromeHidden((h) => !h)}
         >
           <Reader text={text} />
         </div>

@@ -14,6 +14,8 @@
 
   --paper: #f6f1e6;
   --paper-alt: #f2ece0;
+  --rail: #e3d6bd;
+  --rail-strong: #c8b48d;
 
   --font-ui: "IBM Plex Sans", system-ui, sans-serif;
   --font-serif: "Newsreader", Georgia, serif;
@@ -29,6 +31,7 @@
   --reader-align: left;
   --reader-hyphens: manual;
 
+  --rail-gutter: 30px;
   --radius: 10px;
   --shadow-panel: 0 8px 28px rgba(50, 38, 20, 0.14);
   --shadow-puck:
@@ -41,18 +44,25 @@
   color-scheme: light;
   --paper: #f6f1e6;
   --paper-alt: #f2ece0;
+  /* The rail sits a step off the ground, never at text contrast. */
+  --rail: #e3d6bd;
+  --rail-strong: #c8b48d;
 }
 
 [data-ground="cream"] {
   color-scheme: light;
   --paper: #f3e6cf;
   --paper-alt: #efe0c6;
+  --rail: #e2cfa8;
+  --rail-strong: #c4a874;
 }
 
 [data-ground="white"] {
   color-scheme: light;
   --paper: #ffffff;
   --paper-alt: #f7f7f5;
+  --rail: #ece6da;
+  --rail-strong: #cdc1ab;
 }
 
 [data-ground="dark"] {
@@ -69,4 +79,6 @@
   --track: #3b3733;
   --track-band: #4a453f;
   --highlight: #4a3f24;
+  --rail: #37322b;
+  --rail-strong: #5c5245;
 }
