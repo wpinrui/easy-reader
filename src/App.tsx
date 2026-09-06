@@ -1,11 +1,20 @@
 import { type CSSProperties, useCallback, useEffect, useState } from "react";
 import { Controls } from "./components/Controls";
 import { Editor } from "./components/Editor";
+import { Library } from "./components/Library";
 import { Notes } from "./components/Notes";
 import { Reader } from "./components/Reader";
 import { SharePanel } from "./components/SharePanel";
 import { readLegacyHashText } from "./lib/codec";
-import { fetchText, idFromUrl, publishText, urlForId } from "./lib/share";
+import { signIn, watchUser } from "./lib/firebase";
+import {
+  fetchText,
+  idFromUrl,
+  isLibraryUrl,
+  NeedsAccount,
+  publishText,
+  urlForId,
+} from "./lib/share";
 import {
   DEFAULT_PREFS,
   loadNotes,
@@ -36,8 +45,12 @@ export function App() {
   const [loading, setLoading] = useState(() => idFromUrl() !== null);
   const [status, setStatus] = useState("");
   const [prefs, setPrefs] = useState<Prefs>(DEFAULT_PREFS);
+  const [library, setLibrary] = useState(isLibraryUrl);
+  const [email, setEmail] = useState<string | null>(null);
 
   useEffect(() => setPrefs(loadPrefs()), []);
+
+  useEffect(() => watchUser((user) => setEmail(user?.email ?? null)), []);
 
   useEffect(() => {
     savePrefs(prefs);
@@ -113,14 +126,23 @@ export function App() {
     }
     setStatus("Making a link...");
     try {
+      if (!email) {
+        await signIn();
+        setStatus("");
+        return;
+      }
       const id = await publishText(text);
       if (notes) saveNotes(id, notes);
       setDocId(id);
       setShareUrl(urlForId(id));
       window.history.replaceState(null, "", `/${id}`);
       setStatus("");
-    } catch {
-      setStatus("Could not save this text. Try again.");
+    } catch (error) {
+      setStatus(
+        error instanceof NeedsAccount
+          ? "Sign in to share a text."
+          : "Could not save this text. Try again.",
+      );
     }
   }
 
@@ -133,6 +155,26 @@ export function App() {
     "--reader-align": prefs.justify ? "justify" : "left",
     "--reader-hyphens": prefs.hyphenate ? "auto" : "manual",
   } as CSSProperties;
+
+  function closeLibrary() {
+    setLibrary(false);
+    window.history.replaceState(null, "", "/");
+  }
+
+  function openLibrary() {
+    setPanelOpen(false);
+    setShareUrl("");
+    setLibrary(true);
+    window.history.replaceState(null, "", "/library");
+  }
+
+  if (library) {
+    return (
+      <div className="app" style={style}>
+        <Library email={email} onClose={closeLibrary} />
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -167,6 +209,9 @@ export function App() {
               }}
             >
               Paste text
+            </button>
+            <button type="button" className="quiet" onClick={openLibrary}>
+              Shared texts
             </button>
           </section>
         )}
@@ -233,6 +278,9 @@ export function App() {
           <span className="puck-rule" />
           <button type="button" onClick={() => setEditing(true)}>
             New
+          </button>
+          <button type="button" onClick={openLibrary}>
+            Texts
           </button>
         </div>
       )}
