@@ -113,7 +113,7 @@ export function App() {
                   autoFocus
                   value={draft}
                   onChange={(e) => setDraft(e.target.value)}
-                  placeholder="Paste or type here. GitHub-flavoured markdown works."
+                  placeholder="Paste your text"
                   aria-label="Text to read"
                 />
                 <div className="controls">
