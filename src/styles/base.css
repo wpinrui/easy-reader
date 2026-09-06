@@ -429,6 +429,7 @@ input:focus-visible {
 .notes-body:focus-visible {
   outline: 1px solid var(--rail-strong);
   outline-offset: 10px;
+  border-radius: 12px;
 }
 
 .notes-body::placeholder {
