@@ -32,6 +32,9 @@
   --reader-hyphens: manual;
 
   --rail-gutter: 30px;
+  /* How far the rail's hit area reaches out into the page margin. The mark it
+     draws stays in the gutter; this is only the part you can hit. */
+  --rail-reach: 90px;
   --radius: 10px;
   --shadow-panel: 0 8px 28px rgba(50, 38, 20, 0.14);
   --shadow-puck:

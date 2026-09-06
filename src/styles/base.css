@@ -226,12 +226,15 @@ input:focus-visible {
 /* The rail is the only thing that arms line focus, so the pointer never has to
    enter the text to use it. Its hit area fills the gutter; the visible mark is
    the 4px bar. */
+/* The hit area is far wider than the mark it draws: it reaches out into the
+   page margin, and half the paragraph gap above and below, so neighbouring
+   rails meet and there is no dead ground to fall into on the way down. */
 .rail {
   position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: calc(var(--rail-gutter) - 8px);
+  left: calc(-1 * var(--rail-reach));
+  top: -0.55em;
+  bottom: -0.55em;
+  width: calc(var(--rail-reach) + var(--rail-gutter) - 4px);
 }
 
 .plain .rail {
@@ -241,9 +244,9 @@ input:focus-visible {
 .rail::before {
   content: "";
   position: absolute;
-  left: 0;
-  top: 0.24em;
-  bottom: 0.24em;
+  left: var(--rail-reach);
+  top: 0.79em;
+  bottom: 0.79em;
   width: 4px;
   border-radius: 2px;
   background: var(--rail);
@@ -779,6 +782,7 @@ input:focus-visible {
 
   .reader {
     --rail-gutter: 20px;
+    --rail-reach: 24px;
   }
 
   /* Notes become a sheet over the page rather than a second column. */
