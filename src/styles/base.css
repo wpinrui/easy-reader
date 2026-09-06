@@ -175,7 +175,15 @@ input:focus-visible {
 .reading.with-notes .page::before {
   content: "";
   grid-column: 2;
+  grid-row: 1;
   background: var(--rule);
+}
+
+/* Explicit columns for all three: the divider is placed before the page in DOM
+   order, so auto-placement would otherwise push the reading column past it. */
+.reading.with-notes .page-surface {
+  grid-column: 1;
+  grid-row: 1;
 }
 
 .page-surface {
@@ -185,8 +193,9 @@ input:focus-visible {
 }
 
 .reader {
-  max-width: var(--reader-measure);
+  max-width: calc(var(--reader-measure) + var(--rail-gutter));
   width: 100%;
+  margin-left: calc(-1 * var(--rail-gutter));
   font-family: var(--reader-face);
   font-size: var(--reader-size);
   line-height: var(--reader-leading);
@@ -198,28 +207,65 @@ input:focus-visible {
   overflow-wrap: break-word;
 }
 
-.reader > * {
+/* Every block sits in a wrapper that reserves the left margin for its rail.
+   The negative margin pulls the wrapper back so the text column, not the
+   column plus its gutter, is what stays centred. */
+.reader > .blk {
+  position: relative;
+  padding-left: var(--rail-gutter);
+}
+
+.reader :is(p, ul, ol, blockquote, pre, table, hr) {
   margin: 0 0 1.15em;
 }
 
-.reader > *:last-child {
+.reader > .blk:last-child > :last-child {
   margin-bottom: 0;
 }
 
-/* Line focus dims the paragraphs you are not in, which keeps the eye from
-   drifting on a long page. */
-.line-focus .reader:hover > p,
-.line-focus .reader:hover > ul,
-.line-focus .reader:hover > ol,
-.line-focus .reader:hover > blockquote {
+/* The rail is the only thing that arms line focus, so the pointer never has to
+   enter the text to use it. Its hit area fills the gutter; the visible mark is
+   the 4px bar. */
+.rail {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: calc(var(--rail-gutter) - 8px);
+}
+
+.plain .rail {
+  display: none;
+}
+
+.rail::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.24em;
+  bottom: 0.24em;
+  width: 4px;
+  border-radius: 2px;
+  background: var(--rail);
+  transition: background 0.18s ease;
+}
+
+.line-focus .rail {
+  cursor: pointer;
+}
+
+.line-focus .rail:hover::before {
+  background: var(--rail-strong);
+}
+
+/* Dimming only while the pointer is in the gutter: the page reads at full
+   strength until you ask for focus. */
+.line-focus .reader:has(.rail:hover) .blk > :not(.rail) {
   transition: opacity 0.18s ease;
   opacity: 0.42;
 }
 
-.line-focus .reader:hover > p:hover,
-.line-focus .reader:hover > ul:hover,
-.line-focus .reader:hover > ol:hover,
-.line-focus .reader:hover > blockquote:hover {
+.line-focus .reader:has(.rail:hover) .blk .rail:hover ~ * {
   opacity: 1;
 }
 
@@ -234,9 +280,7 @@ input:focus-visible {
   text-align: left;
 }
 
-.reader > h1:first-child,
-.reader > h2:first-child,
-.reader > h3:first-child {
+.reader > .blk:first-child :is(h1, h2, h3) {
   margin-top: 0;
 }
 
@@ -338,6 +382,7 @@ input:focus-visible {
 
 .notes {
   grid-column: 3;
+  grid-row: 1;
   background: var(--paper-alt);
   padding: 64px 48px 56px;
   display: flex;
@@ -732,6 +777,10 @@ input:focus-visible {
     padding: 48px 22px 120px;
   }
 
+  .reader {
+    --rail-gutter: 20px;
+  }
+
   /* Notes become a sheet over the page rather than a second column. */
   .reading.with-notes .page {
     grid-template-columns: 1fr;
@@ -746,6 +795,7 @@ input:focus-visible {
     inset: auto 0 0 0;
     height: 62vh;
     grid-column: 1;
+    grid-row: 1;
     border-top-left-radius: 18px;
     border-top-right-radius: 18px;
     box-shadow: var(--shadow-panel);
