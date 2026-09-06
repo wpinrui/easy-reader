@@ -1,44 +1,72 @@
-:root,
-:root[data-theme="dark"] {
-  color-scheme: dark;
-
-  /* Semantic color tokens. The ONLY file allowed to hold raw hex; everywhere
-     else references these via var(). */
-  --color-bg: #0d1117;
-  --color-surface: #161b22;
-  --color-surface-raised: #21262d;
-  --color-border: #30363d;
-  --color-text: #e6edf3;
-  --color-text-muted: #9ba7b4;
-  --color-accent: #4493f8;
-  --color-accent-text: #0d1117;
-}
-
-:root[data-theme="light"] {
-  color-scheme: light;
-
-  /* Not pure white: a slightly warm off-white lowers glare over long reads. */
-  --color-bg: #fbf9f4;
-  --color-surface: #f3f0e8;
-  --color-surface-raised: #eae6db;
-  --color-border: #d6d0c2;
-  --color-text: #1c1a17;
-  --color-text-muted: #57534a;
-  --color-accent: #0a5ac9;
-  --color-accent-text: #fbf9f4;
-}
-
 :root {
-  --font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-reading: Georgia, "Iowan Old Style", "Times New Roman", serif;
-  --font-mono: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, monospace;
-  --font-size-base: 1rem;
-  --font-size-caption: 0.875rem;
+  /* Paper direction. The ONLY file allowed to hold raw hex; everywhere else
+     references these via var(). Grounds are set on [data-ground]. */
+  --ink: #241f1a;
+  --ink-soft: #4a4238;
+  --ink-faint: #8a7f6d;
+  --ink-fainter: #a1978a;
+  --card: #fffdf8;
+  --rule: #e2d9c6;
+  --rule-soft: #efe8d9;
+  --track: #e6ddca;
+  --track-band: #ddd3bf;
+  --highlight: #f0e2c2;
 
-  /* Reading defaults, overridden per-user via --reader-size on .app. */
-  --reader-size: 20px;
+  --paper: #f6f1e6;
+  --paper-alt: #f2ece0;
+
+  --font-ui: "IBM Plex Sans", system-ui, sans-serif;
+  --font-serif: "Newsreader", Georgia, serif;
+  --font-sans: "IBM Plex Sans", system-ui, sans-serif;
+  --font-hyper: "Atkinson Hyperlegible", system-ui, sans-serif;
+
+  /* Reading variables, driven by the controls. */
+  --reader-face: var(--font-serif);
+  --reader-size: 21px;
   --reader-measure: 62ch;
-  --reader-leading: 1.65;
-  --space: 1rem;
-  --radius: 8px;
+  --reader-leading: 1.7;
+  --reader-tracking: 0em;
+  --reader-align: left;
+  --reader-hyphens: manual;
+
+  --radius: 10px;
+  --shadow-panel: 0 8px 28px rgba(50, 38, 20, 0.14);
+  --shadow-puck:
+    0 6px 24px rgba(50, 38, 20, 0.16), 0 0 0 1px rgba(50, 38, 20, 0.08);
+  --shadow-knob:
+    0 1px 4px rgba(50, 38, 20, 0.25), 0 0 0 1px rgba(50, 38, 20, 0.1);
+}
+
+[data-ground="paper"] {
+  color-scheme: light;
+  --paper: #f6f1e6;
+  --paper-alt: #f2ece0;
+}
+
+[data-ground="cream"] {
+  color-scheme: light;
+  --paper: #f3e6cf;
+  --paper-alt: #efe0c6;
+}
+
+[data-ground="white"] {
+  color-scheme: light;
+  --paper: #ffffff;
+  --paper-alt: #f7f7f5;
+}
+
+[data-ground="dark"] {
+  color-scheme: dark;
+  --paper: #1b1a18;
+  --paper-alt: #232120;
+  --ink: #ece5d8;
+  --ink-soft: #c3baa9;
+  --ink-faint: #8f8779;
+  --ink-fainter: #776f63;
+  --card: #2a2724;
+  --rule: #3b3733;
+  --rule-soft: #322e2a;
+  --track: #3b3733;
+  --track-band: #4a453f;
+  --highlight: #4a3f24;
 }

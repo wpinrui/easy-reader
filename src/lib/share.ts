@@ -1,9 +1,9 @@
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "./firebase";
 
-/** Firestore caps a document at 1 MiB; the rules cap the text well below that
-    so one paste cannot fill a document. */
-export const MAX_TEXT_LENGTH = 200_000;
+/** What one paste may hold. The security rules allow up to 200,000 characters,
+    so this is the product limit rather than the storage one. */
+export const MAX_PASTE_LENGTH = 10_000;
 
 const ALPHABET = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const ID_LENGTH = 8;
