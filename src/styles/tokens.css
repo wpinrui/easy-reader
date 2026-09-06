@@ -1,8 +1,9 @@
-:root {
+:root,
+:root[data-theme="dark"] {
   color-scheme: dark;
 
-  /* Semantic color tokens (dark theme). The ONLY file allowed to hold raw hex;
-     everywhere else references these via var(). See style.md. */
+  /* Semantic color tokens. The ONLY file allowed to hold raw hex; everywhere
+     else references these via var(). */
   --color-bg: #0d1117;
   --color-surface: #161b22;
   --color-surface-raised: #21262d;
@@ -10,9 +11,34 @@
   --color-text: #e6edf3;
   --color-text-muted: #9ba7b4;
   --color-accent: #4493f8;
+  --color-accent-text: #0d1117;
+}
 
-  /* Typography: 16px base, rem-based scale, 14px (0.875rem) floor for fine print. */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  /* Not pure white: a slightly warm off-white lowers glare over long reads. */
+  --color-bg: #fbf9f4;
+  --color-surface: #f3f0e8;
+  --color-surface-raised: #eae6db;
+  --color-border: #d6d0c2;
+  --color-text: #1c1a17;
+  --color-text-muted: #57534a;
+  --color-accent: #0a5ac9;
+  --color-accent-text: #fbf9f4;
+}
+
+:root {
   --font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-reading: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  --font-mono: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, monospace;
   --font-size-base: 1rem;
   --font-size-caption: 0.875rem;
+
+  /* Reading defaults, overridden per-user via --reader-size on .app. */
+  --reader-size: 20px;
+  --reader-measure: 62ch;
+  --reader-leading: 1.65;
+  --space: 1rem;
+  --radius: 8px;
 }
