@@ -1,8 +1,10 @@
 import { type CSSProperties, useEffect, useState } from "react";
 import { QrPanel } from "./components/QrPanel";
 import { Reader } from "./components/Reader";
-import { readHashText, shareUrl } from "./lib/codec";
+import { readLegacyHashText } from "./lib/codec";
+import { fetchText, idFromUrl, publishText, urlForId } from "./lib/share";
 import {
+  DEFAULT_PREFS,
   loadPrefs,
   loadText,
   MAX_FONT_SIZE,
@@ -13,16 +15,42 @@ import {
 } from "./lib/storage";
 
 export function App() {
-  const [text, setText] = useState(() => readHashText() ?? loadText());
+  const [text, setText] = useState(() => readLegacyHashText() ?? "");
   const [draft, setDraft] = useState("");
   const [editing, setEditing] = useState(false);
-  const [sharing, setSharing] = useState(false);
-  const [prefs, setPrefs] = useState<Prefs>(loadPrefs);
+  const [status, setStatus] = useState("");
+  const [shareUrl, setShareUrl] = useState("");
+  const [loading, setLoading] = useState(() => idFromUrl() !== null);
+  const [prefs, setPrefs] = useState<Prefs>(DEFAULT_PREFS);
+
+  useEffect(() => {
+    setPrefs(loadPrefs());
+  }, []);
 
   useEffect(() => {
     savePrefs(prefs);
     document.documentElement.dataset.theme = prefs.theme;
   }, [prefs]);
+
+  // A link's id wins over whatever this device read last.
+  useEffect(() => {
+    const id = idFromUrl();
+    if (!id) {
+      setText((current) => current || loadText());
+      return;
+    }
+    fetchText(id)
+      .then((remote) => {
+        if (remote) {
+          setText(remote);
+          setShareUrl(urlForId(id));
+        } else {
+          setStatus("That link has no text behind it.");
+        }
+      })
+      .catch(() => setStatus("Could not load that link."))
+      .finally(() => setLoading(false));
+  }, []);
 
   useEffect(() => {
     if (text) saveText(text);
@@ -31,9 +59,26 @@ export function App() {
   function open(next: string) {
     setText(next);
     setEditing(false);
-    setSharing(false);
-    window.history.replaceState(null, "", window.location.pathname);
+    setShareUrl("");
+    setStatus("");
+    window.history.replaceState(null, "", "/");
     window.scrollTo(0, 0);
+  }
+
+  async function share() {
+    if (shareUrl) {
+      setShareUrl("");
+      return;
+    }
+    setStatus("Making a link...");
+    try {
+      const id = await publishText(text);
+      setShareUrl(urlForId(id));
+      window.history.replaceState(null, "", `/${id}`);
+      setStatus("");
+    } catch {
+      setStatus("Could not save this text. Try again.");
+    }
   }
 
   function setFontSize(delta: number) {
@@ -46,7 +91,7 @@ export function App() {
     }));
   }
 
-  const showEditor = editing || !text;
+  const showEditor = editing || (!text && !loading);
 
   return (
     <div
@@ -86,7 +131,7 @@ export function App() {
           </button>
           {text && !showEditor && (
             <>
-              <button type="button" onClick={() => setSharing((s) => !s)}>
+              <button type="button" onClick={share}>
                 Share
               </button>
               <button
@@ -104,6 +149,8 @@ export function App() {
       </header>
 
       <main>
+        {status && <p className="status caption">{status}</p>}
+        {loading && <p className="status caption">Loading...</p>}
         {showEditor ? (
           <section className="editor">
             {editing ? (
@@ -144,8 +191,8 @@ export function App() {
           </section>
         ) : (
           <>
-            {sharing && <QrPanel url={shareUrl(text)} />}
-            <Reader text={text} />
+            {shareUrl && <QrPanel url={shareUrl} />}
+            {text && <Reader text={text} />}
           </>
         )}
       </main>

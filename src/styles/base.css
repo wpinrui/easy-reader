@@ -265,3 +265,16 @@ textarea {
 .reader input[type="checkbox"] {
   margin-right: 0.4em;
 }
+
+.status {
+  max-width: 68rem;
+  margin: var(--space) auto 0;
+  text-align: center;
+}
+
+.link {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-caption);
+  color: var(--color-text-muted);
+  word-break: break-all;
+}
