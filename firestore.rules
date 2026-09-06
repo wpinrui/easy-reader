@@ -2,16 +2,40 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // A shared text is readable by anyone holding its id, writable once, and
-    // never editable or listable. Ids are random, so they are not enumerable.
+    // A shared text is readable by anyone holding its id, and belongs to the
+    // Google account that created it: only that owner can list or delete it.
     match /texts/{id} {
       allow get: if true;
-      allow create: if request.resource.data.keys().hasOnly(['text', 'createdAt'])
+
+      // Listing is owner-scoped. Firestore only runs a query whose constraints
+      // guarantee every result passes this, so a query without the owner
+      // filter is rejected outright rather than returning someone else's texts.
+      allow list: if request.auth != null
+                  && resource.data.owner == request.auth.uid;
+
+      allow create: if request.auth != null
+                    && request.resource.data.keys().hasOnly(
+                         ['text', 'owner', 'title', 'wordCount',
+                          'createdAt', 'lastAccessedAt'])
+                    && request.resource.data.owner == request.auth.uid
                     && request.resource.data.text is string
                     && request.resource.data.text.size() > 0
                     && request.resource.data.text.size() <= 200000
-                    && request.resource.data.createdAt == request.time;
-      allow list, update, delete: if false;
+                    && request.resource.data.title is string
+                    && request.resource.data.title.size() <= 90
+                    && request.resource.data.wordCount is int
+                    && request.resource.data.wordCount >= 0
+                    && request.resource.data.createdAt == request.time
+                    && request.resource.data.lastAccessedAt == request.time;
+
+      // Anyone holding the link may record that they opened it, account or no
+      // account, and may change nothing else. The text itself stays immutable.
+      allow update: if request.resource.data.diff(resource.data)
+                         .affectedKeys().hasOnly(['lastAccessedAt'])
+                    && request.resource.data.lastAccessedAt == request.time;
+
+      allow delete: if request.auth != null
+                    && resource.data.owner == request.auth.uid;
     }
 
     match /{document=**} {

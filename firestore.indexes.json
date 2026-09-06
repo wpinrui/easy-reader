@@ -1,0 +1,13 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "texts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "owner", "order": "ASCENDING" },
+        { "fieldPath": "lastAccessedAt", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
