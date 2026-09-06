@@ -276,7 +276,15 @@ export function App() {
             />
           ))}
           <span className="puck-rule" />
-          <button type="button" onClick={() => setEditing(true)}>
+          {/* Opens with the current source, so the markdown behind what you are
+              reading is always recoverable. */}
+          <button
+            type="button"
+            onClick={() => {
+              setDraft(text);
+              setEditing(true);
+            }}
+          >
             New
           </button>
           <button type="button" onClick={openLibrary}>
