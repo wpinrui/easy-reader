@@ -521,10 +521,13 @@ input:focus-visible {
 .share {
   position: fixed;
   left: 50%;
-  bottom: 88px;
+  bottom: var(--panel-lift, 88px);
   transform: translateX(-50%);
   z-index: 30;
   width: min(360px, calc(100vw - 32px));
+  max-height: calc(100vh - var(--panel-lift, 88px) - 16px);
+  max-height: calc(100dvh - var(--panel-lift, 88px) - 16px);
+  display: flex;
 }
 
 .reading.with-notes .panel-wrap {
@@ -532,6 +535,11 @@ input:focus-visible {
 }
 
 .panel {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   border: 1px solid var(--rule);
   border-radius: 14px;
   background: var(--card);
@@ -822,7 +830,7 @@ input:focus-visible {
   }
 
   .panel-wrap {
-    bottom: 76px;
+    --panel-lift: 76px;
   }
 }
 
