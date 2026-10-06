@@ -193,6 +193,8 @@ input:focus-visible {
   color: var(--ink);
   text-wrap: pretty;
   overflow-wrap: break-word;
+  outline: none;
+  caret-color: var(--ink);
 }
 
 /* Every block sits in a wrapper that reserves the left margin for its rail.

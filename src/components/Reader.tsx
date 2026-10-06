@@ -7,6 +7,10 @@ export function Reader({ text }: { text: string }) {
   return (
     <article
       className="reader"
+      // Typing here edits only what is on screen; the source is untouched.
+      contentEditable
+      suppressContentEditableWarning
+      spellCheck={false}
       // biome-ignore lint/security/noDangerouslySetInnerHtml: sanitised by DOMPurify
       dangerouslySetInnerHTML={{ __html: html }}
     />

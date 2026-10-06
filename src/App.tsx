@@ -91,7 +91,9 @@ export function App() {
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      const typing = e.target instanceof HTMLTextAreaElement;
+      const typing =
+        e.target instanceof HTMLTextAreaElement ||
+        (e.target instanceof HTMLElement && e.target.isContentEditable);
       if (e.key === "Escape") {
         setPanelOpen(false);
         setShareUrl("");
